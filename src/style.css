@@ -1,0 +1,35 @@
+:root {
+  --color-white-100: #fff;
+  --color-white-eee: #eee;
+  --color-white-ddd: #ddd;
+  --color-white-ccc: #ccc;
+  --color-black-000: #000;
+  --color-black-100: #111;
+  --color-black-200: #222;
+  --color-black-600: #666;
+  --color-gray-100: #333;
+  --color-gray-200: #666;
+  --color-yellow-200: goldenrod;
+  --color-blue-100: cornflowerblue;
+  --color-purple-100: #bd9dff;
+  --font-monospace-default:
+    ui-monospace, SFMono-Regular, "Cascadia Mono", "Roboto Mono",
+    "DejaVu Sans Mono", "Liberation Mono", Menlo, Monaco, "Consolas",
+    "Source Code Pro", monospace;
+  /* font-size: 62.5%; */
+  --checkbox-transition: all 0.4s;
+}
+
+* {
+  box-sizing: border-box;
+  /* font-size: 1.6rem; */
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: sans-serif;
+  background-color: var(--color-black-100);
+  color: var(--color-white-100);
+  padding: 1em;
+}
