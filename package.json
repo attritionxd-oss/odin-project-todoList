@@ -1,0 +1,25 @@
+{
+  "name": "odin-project-todolist",
+  "version": "1.0.0",
+  "description": "This repository is a solution to the project outlined in [The Odin Project > Project: Todo List](https://www.theodinproject.com/lessons/node-path-javascript-todo-list)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/attritionxd-oss/odin-project-todoList.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/attritionxd-oss/odin-project-todoList/issues"
+  },
+  "homepage": "https://github.com/attritionxd-oss/odin-project-todoList#readme",
+  "devDependencies": {
+    "webpack": "^5.105.2",
+    "webpack-cli": "^6.0.1"
+  }
+}
