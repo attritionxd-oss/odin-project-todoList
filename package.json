@@ -4,7 +4,10 @@
   "description": "This repository is a solution to the project outlined in [The Odin Project > Project: Todo List](https://www.theodinproject.com/lessons/node-path-javascript-todo-list)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack serve --open --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js",
+    "server": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -19,7 +22,10 @@
   },
   "homepage": "https://github.com/attritionxd-oss/odin-project-todoList#readme",
   "devDependencies": {
+    "html-webpack-plugin": "^5.6.6",
     "webpack": "^5.105.2",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.3",
+    "webpack-merge": "^6.0.1"
   }
 }
