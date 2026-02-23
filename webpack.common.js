@@ -24,4 +24,12 @@ export default {
     filename: "js/[name][contenthash].js",
     clean: true,
   },
+  module: {
+    rules: [
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: "asset/resource",
+      },
+    ],
+  },
 };
