@@ -12,6 +12,7 @@ class AppData {
     this.todoLists = [];
     this.todoItems = [];
     this.isLoaded = false;
+    this.defaultProjectId;
   }
   async init() {
     try {
@@ -22,15 +23,16 @@ class AppData {
       }
       this.isLoaded = true;
       console.log("Store initialized, data hydrated.");
-      this.getOrCreateProject("Default");
     } catch (error) {
       console.error("Failed to load data:", error);
     }
   }
+
   hydrate(data) {
     this.projects = data.projects.map((p) => new Project(p.id, p.name));
-    this.todo = data.todoLists.map((l) => new Project(l.id, l.name));
-    this.items = data.todoItem.map((i) => new Project(i.id, i.name));
+    this.todoLists = data.todoLists.map((l) => new Project(l.id, l.name));
+    this.todoItems = data.todoItem.map((i) => new Project(i.id, i.name));
+    this.defaultProjectId = data.projects.find((p) => (p.name = "Default"));
   }
   async saveData() {
     const dataToSave = {
@@ -57,12 +59,15 @@ AppData.prototype.getOrCreateProject = function (name) {
 AppData.prototype.updateProject = function (id) {};
 AppData.prototype.deleteProject = function (id) {};
 AppData.prototype.getTodoList = function (id) {};
-AppData.prototype.createTodoList = function (name) {
+AppData.prototype.getOrCreateTodoList = function (name) {
   let list = this.todoLists.find((l) => l.name === name);
   if (!list) {
     list = new TodoList(null, name);
+    list.projectId = this.defaultProjectId;
+
+    this.todoLists.push(list);
+    this.saveData();
   }
-  this.todoLists.push(list);
   return list;
 };
 AppData.prototype.updateTodoList = function (id) {};
