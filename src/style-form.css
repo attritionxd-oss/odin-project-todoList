@@ -1,0 +1,104 @@
+/* form styles */
+form label,
+form input {
+  font-size: 1.4rem;
+}
+
+/* modal styles */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background-color: var(--color-mono-200);
+  border-radius: 1rem;
+  padding: 2rem 3rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(350px, 30vw, 500px);
+  z-index: 1;
+  visibility: hidden;
+}
+
+.form-title {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+
+.form-title h3 {
+  margin-right: auto;
+}
+
+.form-title .close-form {
+  display: inline-block;
+  position: absolute;
+  right: 1rem;
+  background-color: var(--color-black-600);
+  border: none;
+  border-radius: 0.5rem;
+  color: var(--color-white-100);
+  padding: 2rem;
+  cursor: pointer;
+}
+
+form > p {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1rem;
+}
+
+form > p > label {
+  /* margin: auto 0; */
+  align-self: center;
+}
+
+form input {
+  height: 2.8rem;
+  border-radius: 0.8rem;
+  padding: 0.5rem;
+}
+
+form > button.submit {
+  background-color: var(--color-mono-600);
+  border: none;
+  border-radius: 0.5rem;
+  color: var(--color-white-100);
+  padding: 0.8rem 2rem;
+  width: clamp(150px, 20%, 300px);
+  margin-top: auto;
+  align-self: center;
+  justify-self: flex-end;
+}
+
+form #isRead {
+  width: fit-content;
+  margin-left: 40%;
+}
+
+form .input-error {
+  border-color: var(--color-alert-red);
+  /* border-color: red; */
+}
+
+.error-popup {
+  position: absolute;
+  top: calc(1.7rem + 2rem + 2.5rem);
+  left: 330px;
+  width: 200%;
+  color: var(--color-alert-red);
+  /* color: red; */
+}
+
+.error-popup-hidden {
+  opacity: 0;
+  /* transform: translateY(5px); */
+}
+
+.error-popup-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* end modal styles */

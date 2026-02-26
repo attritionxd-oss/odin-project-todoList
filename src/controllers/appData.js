@@ -4,23 +4,29 @@ import TodoItem from "../model/todoItem.js";
 import BaseColor from "../model/colors.js";
 
 class AppData {
-  #storage;
+  // #storage;
   #LOCAL_STORAGE_KEY = "todo_app_key";
+  #defaultProjectName = "Default";
   constructor(storageProcessor) {
     this.storage = storageProcessor;
     this.projects = [];
     this.todoLists = [];
     this.todoItems = [];
     this.isLoaded = false;
-    this.defaultProjectId;
+    this.defaultProjectId = null;
   }
   async init() {
     try {
       const data = await this.storage.load(this.#LOCAL_STORAGE_KEY);
       if (data) {
         // Hydrate the raw JSON back into Class Instances
+        this.defaultProjectId = data.defaultProjectId;
         this.hydrate(data);
       }
+
+      const defaultProject = this.getOrCreateProject(this.defaultProjectName);
+      this.defaultProjectId = defaultProject.id;
+
       this.isLoaded = true;
       console.log("Store initialized, data hydrated.");
     } catch (error) {
@@ -30,19 +36,33 @@ class AppData {
 
   hydrate(data) {
     this.projects = data.projects.map((p) => new Project(p.id, p.name));
-    this.todoLists = data.todoLists.map((l) => new Project(l.id, l.name));
-    this.todoItems = data.todoItem.map((i) => new Project(i.id, i.name));
-    this.defaultProjectId = data.projects.find((p) => (p.name = "Default"));
+    this.todoLists = data.todoLists.map((l) => new TodoList(l.id, l.name));
+    this.todoItems = data.todoItems.map((i) => new TodoItem(i.id, i.name));
   }
+
   async saveData() {
     const dataToSave = {
       projects: this.projects.map((p) => p.toJSON()),
       todoLists: this.todoLists.map((l) => l.toJSON()),
-      todoItem: this.todoItems.map((i) => i.toJSON()),
+      todoItems: this.todoItems.map((i) => i.toJSON()),
+      defaultProjectId: this.defaultProjectId,
     };
     await this.storage.save(this.#LOCAL_STORAGE_KEY, dataToSave);
   }
+  get defaultProjectName() {
+    return this.#defaultProjectName;
+  }
 }
+
+AppData.prototype.getAllListsForDisplay = function () {
+  return this.todoLists.map((listItem) => {
+    const project = this.projects.find((p) => p.id === listItem.projectId);
+    return Object.assign(
+      listItem, // id, title, content
+      { projectName: project ? project.name : "No project" }, // !todo: fix projectId bug
+    );
+  });
+};
 
 AppData.prototype.getOrCreateProject = function (name) {
   let project = this.projects.find((p) => p.name === name);
@@ -59,11 +79,13 @@ AppData.prototype.getOrCreateProject = function (name) {
 AppData.prototype.updateProject = function (id) {};
 AppData.prototype.deleteProject = function (id) {};
 AppData.prototype.getTodoList = function (id) {};
-AppData.prototype.getOrCreateTodoList = function (name) {
-  let list = this.todoLists.find((l) => l.name === name);
+AppData.prototype.getOrCreateTodoList = function (name, projectId = null) {
+  const targetProjectId = projectId || this.defaultProjectId;
+  let list = this.todoLists.find(
+    (l) => l.name === name && l.projectId === targetProjectId,
+  );
   if (!list) {
-    list = new TodoList(null, name);
-    list.projectId = this.defaultProjectId;
+    list = new TodoList(null, name, targetProjectId);
 
     this.todoLists.push(list);
     this.saveData();

@@ -30,6 +30,14 @@ export default {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: "asset/resource",
       },
+      {
+        test: /\.html$/i,
+        loader: "html-loader",
+        options: {
+          // Disables attribute processing if you only want the raw string
+          sources: false,
+        },
+      },
     ],
   },
 };

@@ -21,7 +21,7 @@ export default class TodoList {
       name: name,
       dateCreated: new Date(),
       dateModified: new Date(),
-      projectId: null | projectId,
+      projectId: null || projectId,
     });
 
     if (error) {

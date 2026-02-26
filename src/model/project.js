@@ -17,7 +17,6 @@ const ProjectSchema = Joi.object({
 export default class Project {
   #data;
   #lists = [];
-  // !todo: create default properties to be loaded when !input
   constructor(id, name) {
     const { error, value } = ProjectSchema.validate({
       id: id || crypto.randomUUID(),
