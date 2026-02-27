@@ -11,7 +11,7 @@ const CreateTodoListForm = {
   initEventListeners: (appStore) => {
     const closeCreateTodoList = document.querySelector("#closeCreateTodoList");
     const formModal = document.querySelector("#todo-list-form");
-    const listNameInput = document.querySelector("#list-name-input");
+    const listNameInput = document.querySelector("#list-name-input-todo-form");
     const errorPopup = document.querySelector("div .error-popup");
 
     closeCreateTodoList.addEventListener("click", () => {
@@ -21,7 +21,9 @@ const CreateTodoListForm = {
     const submitButton = document.querySelector("#createTodoList");
     submitButton.addEventListener("click", () => {
       const listNameValue = listNameInput.value;
-      const projectField = document.querySelector("#project-name-input");
+      const projectField = document.querySelector(
+        "#project-name-input-todo-form",
+      );
       const projectName = !projectField.value ? "Default" : projectField.value;
       console.log(projectName);
       if (!listNameValue.trim()) {

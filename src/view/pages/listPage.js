@@ -1,34 +1,28 @@
+import TodoListDetailView from "./listDetailPage.js";
 const TodoListsView = {
-  createProjectElement: (pId, pName) => {
-    const element = document.createElement("p");
-    element.classList.add("todo-list-block-content");
-    const labelForProject = document.createElement("label");
-    labelForProject.setAttribute("for", "project-name");
-    labelForProject.textContent = "Project";
-    const inputForProject = document.createElement("input");
-    inputForProject.type = "text";
-    inputForProject.classList.add("todo-list-project-tag");
-    inputForProject.value = pName;
-    element.appendChild(labelForProject);
-    element.appendChild(inputForProject);
-    return element;
-  },
-  createAddNoteButton: (listId) => {
-    const btn = document.createElement("button");
-    const btnText = document.createElement("span");
-    btn.type = "button";
-    btn.classList.add("add-new-note");
-    btn.setAttribute("data-list-id", listId);
-    btnText.textContent = "Add new item";
-    btn.appendChild(btnText);
-    return btn;
-  },
   render: (appStore) => {
+    function createProjectElement(allProjects, pId, pName) {
+      const element = document.createElement("p");
+      element.classList.add("todo-list-grid-content");
+
+      const labelForProject = document.createElement("p");
+      labelForProject.textContent = "Project";
+
+      const inputForProject = document.createElement("p");
+      inputForProject.type = "text";
+      inputForProject.classList.add("todo-list-project-tag");
+      inputForProject.textContent = pName;
+
+      element.appendChild(labelForProject);
+      element.appendChild(inputForProject);
+      return element;
+    }
+
     const appContent = document.querySelector("#app-content");
-    appContent.textContent = "";
+    appContent.innerHTML = "";
     const todoLists = appStore.getAllListsForDisplay();
+    const allProjects = appStore.getAllProjectsForDisplay();
     todoLists.forEach((element) => {
-      console.log(element.name, element.projectId); // !todo: fix projectId bug
       const list = document.createElement("article");
       const listId = element.id;
       const projectId = element.projectId;
@@ -42,13 +36,32 @@ const TodoListsView = {
 
       list.appendChild(listTitle);
       list.appendChild(
-        TodoListsView.createProjectElement(projectId, projectName),
+        createProjectElement(allProjects, projectId, projectName),
       );
-      list.appendChild(TodoListsView.createAddNoteButton(listId));
       appContent.appendChild(list);
     });
 
     return todoLists;
+  },
+  initEventListeners: (appStore) => {
+    const listBlocks = document.querySelectorAll(".todo-list-block");
+    listBlocks.forEach((block) => {
+      block.addEventListener("click", (e) => {
+        try {
+          const targetList = appStore
+            .getAllListsForDisplay()
+            .find((l) => l.id === e.target.id);
+          TodoListDetailView.updateDetail(
+            appStore.getAllProjectsForDisplay(),
+            targetList,
+            e.target,
+          );
+        } catch (error) {
+          TodoListsView.render(appStore);
+          console.error("Error finding list. Try refreshing the page");
+        }
+      });
+    });
   },
 };
 

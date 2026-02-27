@@ -36,7 +36,9 @@ class AppData {
 
   hydrate(data) {
     this.projects = data.projects.map((p) => new Project(p.id, p.name));
-    this.todoLists = data.todoLists.map((l) => new TodoList(l.id, l.name));
+    this.todoLists = data.todoLists.map(
+      (l) => new TodoList(l.id, l.name, l.projectId),
+    );
     this.todoItems = data.todoItems.map((i) => new TodoItem(i.id, i.name));
   }
 
@@ -54,8 +56,12 @@ class AppData {
   }
 }
 
+AppData.prototype.getAllProjectsForDisplay = function () {
+  return this.projects;
+};
+
 AppData.prototype.getAllListsForDisplay = function () {
-  return this.todoLists.map((listItem) => {
+  return this.todoLists.slice().map((listItem) => {
     const project = this.projects.find((p) => p.id === listItem.projectId);
     return Object.assign(
       listItem, // id, title, content
@@ -76,7 +82,16 @@ AppData.prototype.getOrCreateProject = function (name) {
   return project;
 };
 // !todo
-AppData.prototype.updateProject = function (id) {};
+AppData.prototype.updateProject = function (targetId, fieldName, newValue) {
+  let project = this.projects.find((p) => p.id === targetId);
+  // if (!project[fieldName]) {
+  //   throw new Error(`Field name: ${fieldName} not found.`);
+  // }
+  project[fieldName] = newValue;
+  this.saveData();
+
+  console.log(`Project '${project.name}' ${fieldName}: now set to ${newValue}`);
+};
 AppData.prototype.deleteProject = function (id) {};
 AppData.prototype.getTodoList = function (id) {};
 AppData.prototype.getOrCreateTodoList = function (name, projectId = null) {
@@ -92,7 +107,16 @@ AppData.prototype.getOrCreateTodoList = function (name, projectId = null) {
   }
   return list;
 };
-AppData.prototype.updateTodoList = function (id) {};
+AppData.prototype.updateTodoList = function (targetId, fieldName, newValue) {
+  let list = this.todoLists.find((l) => l.id === targetId);
+  if (!list[fieldName]) {
+    throw new Error(`Field name: ${fieldName} not found.`);
+  }
+  list[fieldName] = newValue;
+  this.saveData();
+
+  console.debug(`List '${list.name}' ${fieldName}: now set to ${newValue}`);
+};
 AppData.prototype.deleteTodoList = function (id) {};
 AppData.prototype.getTodoItem = function (id) {};
 AppData.prototype.createTodoItem = function (name) {
