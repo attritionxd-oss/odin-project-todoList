@@ -65,7 +65,7 @@ AppData.prototype.getAllListsForDisplay = function () {
     const project = this.projects.find((p) => p.id === listItem.projectId);
     return Object.assign(
       listItem, // id, title, content
-      { projectName: project ? project.name : "No project" }, // !todo: fix projectId bug
+      { projectName: project ? project.name : "No project" },
     );
   });
 };
@@ -81,19 +81,18 @@ AppData.prototype.getOrCreateProject = function (name) {
 
   return project;
 };
-// !todo
 AppData.prototype.updateProject = function (targetId, fieldName, newValue) {
   let project = this.projects.find((p) => p.id === targetId);
-  // if (!project[fieldName]) {
-  //   throw new Error(`Field name: ${fieldName} not found.`);
-  // }
   project[fieldName] = newValue;
   this.saveData();
 
   console.log(`Project '${project.name}' ${fieldName}: now set to ${newValue}`);
 };
+// !todo
 AppData.prototype.deleteProject = function (id) {};
-AppData.prototype.getTodoList = function (id) {};
+AppData.prototype.getTodoList = function (listId) {
+  return this.todoLists.find((l) => l.id === listId);
+};
 AppData.prototype.getOrCreateTodoList = function (name, projectId = null) {
   const targetProjectId = projectId || this.defaultProjectId;
   let list = this.todoLists.find(
@@ -117,13 +116,11 @@ AppData.prototype.updateTodoList = function (targetId, fieldName, newValue) {
 
   console.debug(`List '${list.name}' ${fieldName}: now set to ${newValue}`);
 };
+// !todo
 AppData.prototype.deleteTodoList = function (id) {};
 AppData.prototype.getTodoItem = function (id) {};
-AppData.prototype.createTodoItem = function (name) {
-  let item = this.todoItems.find((i) => i.name === name);
-  if (!item) {
-    item = new TodoItem(null, name);
-  }
+AppData.prototype.createTodoItem = function (listId, itemName) {
+  let item = new TodoItem(null, itemName, listId);
   this.todoItems.push(item);
 
   return item;

@@ -48,9 +48,7 @@ const TodoListsView = {
     listBlocks.forEach((block) => {
       block.addEventListener("click", (e) => {
         try {
-          const targetList = appStore
-            .getAllListsForDisplay()
-            .find((l) => l.id === e.target.id);
+          const targetList = appStore.getTodoList(e.target.id);
           TodoListDetailView.updateDetail(
             appStore.getAllProjectsForDisplay(),
             targetList,
