@@ -14,17 +14,24 @@ const xBtn = document.createElement("button");
 const addNoteBtn = document.createElement("button");
 addNoteBtn.classList.add("add-new-note");
 
+// line item block
+const listItemWrapper = document.createElement("div");
+listItemWrapper.classList.add("list-item-wrapper");
+
 // --------------------------- default export ---------------------------
 const TodoListDetailView = {
-  updateDetail: (allProjects, listObject, block) => {
+  updateDetail: (appStore, listId, block) => {
+    const listObject = appStore.getTodoListById(listId);
     container.dataset.listId = block.id;
     title.textContent = listObject.name;
     projectLineItemUpdate(
-      allProjects,
+      appStore.getAllProjectsForDisplay(),
       listObject.projectId,
       listObject.projectName,
     );
     updateAddNoteInit(listObject.id);
+    populateListItems(appStore);
+    handleItemStatusFlag(appStore);
     containerWrapper.style.visibility = "visible";
     container.style.visibility = "visible";
   },
@@ -32,8 +39,11 @@ const TodoListDetailView = {
     xBtn.addEventListener("click", () => {
       containerWrapper.style.visibility = "hidden";
       container.style.visibility = "hidden";
+      document.querySelector(".new-note").style.visibility = "hidden";
+      document.querySelector(".add-new-note").style.visibility = "hidden";
     });
     handleChangeProject(appStore);
+    handleNewNote(appStore);
   },
   render: () => {
     containerWrapperInit();
@@ -42,6 +52,8 @@ const TodoListDetailView = {
     addNoteInit();
   },
 };
+
+// --------------------------- default export ---------------------------
 
 function containerWrapperInit() {
   containerWrapper.classList.add("container-wrapper");
@@ -81,11 +93,6 @@ function projectLineItemUpdate(allProjects, pId, pName) {
   option.textContent = pName;
   option.dataset.projectId = pId;
   projectSelect.appendChild(option);
-  console.log(
-    allProjects
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map((p, i) => `${i}: ${p.name}`),
-  );
   allProjects
     .filter((p) => p.id !== pId)
     .sort((a, b) => a.name.localeCompare(b.name))
@@ -112,14 +119,15 @@ function addNoteInit() {
 }
 
 function updateAddNoteInit(listId) {
-  addNoteBtn.setAttribute("data-list-id", listId);
+  document.querySelector(".add-new-note").style.visibility = "visible";
+  addNoteBtn.dataset.listId = listId;
 }
 
 function handleChangeProject(appStore) {
   const selectElement = document.querySelector("#project-select");
   selectElement.addEventListener("change", (e) => {
-    const targetOpion = e.target.options[e.target.selectedIndex];
-    const targetProjectId = targetOpion.dataset.projectId;
+    const targetOption = e.target.options[e.target.selectedIndex];
+    const targetProjectId = targetOption.dataset.projectId;
 
     const allProjects = appStore.getAllProjectsForDisplay();
     const targetProjectName = appStore
@@ -140,6 +148,107 @@ function handleChangeProject(appStore) {
       projectLineItemUpdate(allProjects, targetProjectId, targetProjectName);
       TodoListsView.render(appStore);
     }
+  });
+}
+
+function handleNewNote(appStore) {
+  const pNewNote = document.createElement("p");
+  const input = document.createElement("input");
+
+  pNewNote.classList.add("todo-list-grid-content");
+  pNewNote.classList.add("new-note");
+
+  const label = document.createElement("label");
+  label.setAttribute("for", "new-note-name");
+  label.textContent = "Note name";
+
+  input.type = "text";
+  input.name = "new-note-name";
+  input.required = true;
+  input.id = "new-note-input";
+
+  pNewNote.appendChild(label);
+  pNewNote.appendChild(input);
+
+  container.insertBefore(pNewNote, addNoteBtn);
+  pNewNote.style.visibility = "hidden";
+
+  addNoteBtn.addEventListener("click", (e) => {
+    addNoteBtn.style.visibility = "hidden";
+    pNewNote.style.visibility = "visible";
+    input.focus();
+  });
+
+  input.addEventListener("blur", (e) => {
+    newNoteEvent(e, appStore);
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      newNoteEvent(e, appStore);
+    }
+  });
+}
+
+function newNoteEvent(e, appStore) {
+  const pNewNote = document.querySelector(".new-note");
+  const addNoteBtn = document.querySelector(".add-new-note");
+  if (!e.target.value.trim()) {
+    pNewNote.style.visibility = "hidden";
+    addNoteBtn.style.visibility = "visible";
+    return;
+  }
+  const value = e.target.value;
+  e.target.value = "";
+
+  const list = appStore.getTodoListById(container.dataset.listId);
+  const project = appStore.getProjectById(list.projectId);
+  appStore.createTodoItem(container.dataset.listId, value, project.id);
+  populateListItems(appStore);
+  handleItemStatusFlag(appStore);
+
+  pNewNote.style.visibility = "hidden";
+  addNoteBtn.style.visibility = "visible";
+}
+
+function populateListItems(appStore) {
+  const targetListId = appStore.getTodoListById(container.dataset.listId).id;
+  const todoItems = appStore.getTodoItemsForDisplay(targetListId);
+
+  listItemWrapper.innerHTML = "";
+  const listItemBlock = document.createElement("ul");
+  todoItems.forEach((item) => {
+    const li = document.createElement("li");
+
+    const liInput = document.createElement("input");
+    liInput.type = "checkbox";
+    liInput.id = `status-${item.id}`;
+    liInput.dataset.itemId = item.id;
+    liInput.classList.add("todo-item-status-flag");
+    liInput.checked = item.statusFlag;
+
+    const liLabel = document.createElement("label");
+    liLabel.setAttribute("for", `status-${item.id}`);
+    liLabel.textContent = item.name;
+
+    li.appendChild(liInput);
+    li.appendChild(liLabel);
+
+    listItemBlock.appendChild(li);
+  });
+  listItemWrapper.appendChild(listItemBlock);
+  container.insertBefore(listItemWrapper, document.querySelector(".new-note"));
+}
+
+function handleItemStatusFlag(appStore) {
+  const todoItems = document.querySelectorAll(".todo-item-status-flag");
+  todoItems.forEach((itemElement) => {
+    itemElement.addEventListener("click", (e) => {
+      const targetItemId = e.target.dataset.itemId;
+      const fieldName = "statusFlag";
+      const targetFlag = e.target.checked;
+      appStore.updateTodoItem(targetItemId, fieldName, targetFlag);
+    });
   });
 }
 

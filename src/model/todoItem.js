@@ -27,10 +27,17 @@ const TodoItemSchema = Joi.object({
     .valid(...ALLOWED_STATUS_TAGS)
     .optional()
     .default("pending"),
+  statusFlag: Joi.any().optional().default(false),
 });
 export default class TodoItem {
   #data;
-  constructor(id, name, todoListId = null, projectId = null) {
+  constructor(
+    id,
+    name,
+    todoListId = null,
+    projectId = null,
+    statusFlag = false,
+  ) {
     const { error, value } = TodoItemSchema.validate({
       id: id || crypto.randomUUID(),
       name: name,
@@ -38,6 +45,7 @@ export default class TodoItem {
       dateModified: new Date(),
       todoListId: null || todoListId,
       projectId: null || projectId,
+      statusFlag: false || statusFlag,
     });
     if (error) {
       throw new Error(`Validation error ${error.details[0].message}`);
@@ -145,5 +153,11 @@ export default class TodoItem {
   }
   set statusTags(input) {
     this.#data.statusTags = TodoItem.#validateSchema("statusTags", input);
+  }
+  get statusFlag() {
+    return this.#data.statusFlag;
+  }
+  set statusFlag(isDone) {
+    this.#data.statusFlag = isDone;
   }
 }

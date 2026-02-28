@@ -14,7 +14,7 @@
 .todo-list-detail-block {
   display: flex;
   flex-direction: column;
-  height: clamp(150px, 10%, 100%);
+  /* height: clamp(150px, 10%, 100%); */
   background-color: var(--color-mono-300);
   border-radius: 1rem;
   padding: 2rem 3rem;
@@ -53,4 +53,8 @@
   padding: 0.5rem 0.8rem;
   cursor: pointer;
   margin-left: auto;
+}
+
+.list-item-wrapper ul {
+  list-style: none;
 }
